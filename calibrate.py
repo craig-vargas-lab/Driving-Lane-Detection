@@ -14,6 +14,12 @@ OUT_DIR = 'output_images'
 OUT_PREFIX = 'findCorners'
 OUT_SUFFIX = '.jpg'
 
+SAVE_DRAW_CORNERS = False
+
+UNDISTORT = True
+UNDISTORT_FILE = 'camera_cal/calibration1.jpg'
+
+
 image_paths = glob.glob(os.path.join(CAL_DIR, GLOB_EXT))
 
 # img = mpimg.imread(CAL_FILE)
@@ -41,12 +47,13 @@ for idx, path in enumerate(image_paths):
 		imgpoints.append(corners)
 		objpoints.append(objp)
 
-		img = cv2.drawChessboardCorners(img, num_corners, corners, ret)
-		out_name = OUT_PREFIX + str(idx + 1) + OUT_SUFFIX
-		out_path = os.path.join(OUT_DIR, out_name)
-		cv2.imwrite(out_path, img)
-		# plt.imshow(img)
-		# plt.show()
+		if SAVE_DRAW_CORNERS:
+			img = cv2.drawChessboardCorners(img, num_corners, corners, ret)
+			out_name = OUT_PREFIX + str(idx + 1) + OUT_SUFFIX
+			out_path = os.path.join(OUT_DIR, out_name)
+			cv2.imwrite(out_path, img)
+			# plt.imshow(img)
+			# plt.show()
 
 print()
 print("Success count: ", success_count)
@@ -57,6 +64,17 @@ formatted_shape = (img.shape[1], img.shape[0])
 
 
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, formatted_shape, None, None)
+
+if UNDISTORT:
+	img = mpimg.imread(UNDISTORT_FILE)
+	undist = cv2.undistort(img, mtx, dist, None, mtx)
+	out_name = 'undistorted_calibration1.jpg'
+	out_path = os.path.join(OUT_DIR, out_name)
+	cv2.imwrite(out_path, undist)
+	plt.imshow(undist)
+	plt.show()
+	exit()
+
 
 dist_pickle = {}
 dist_pickle['mtx'] = mtx
