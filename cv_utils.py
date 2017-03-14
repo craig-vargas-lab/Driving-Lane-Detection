@@ -83,12 +83,38 @@ def hsv_select(img, channel='h', thresh=(0, 255)):
     return binary
 
 
-# Define a function that thresholds the S-channel of HLS
+# Define a function that thresholds the S-channel of RGB
 # Use exclusive lower bound (>) and inclusive upper (<=)
 def rgb_select(img, channel='r', thresh=(0, 255)):
     
     channels = {'r':0, 'g':1, 'b':2}
     channel = img[:,:,channels[channel]]
+    binary = np.zeros_like(channel)
+    binary[(channel>thresh[0]) & (channel<thresh[1])]=1
+    
+    return binary
+
+
+# Define a function that thresholds the a channel of Lab
+# Use exclusive lower bound (>) and inclusive upper (<=)
+def lab_select(img, channel='l', thresh=(0, 255)):
+    
+    channels = {'l':0, 'a':1, 'b':2}
+    lab = cv2.cvtColor(img, cv2.COLOR_RGB2Lab)
+    channel = lab[:,:,channels[channel]]
+    binary = np.zeros_like(channel)
+    binary[(channel>thresh[0]) & (channel<thresh[1])]=1
+    
+    return binary
+
+
+# Define a function that thresholds the a channel of Luv
+# Use exclusive lower bound (>) and inclusive upper (<=)
+def luv_select(img, channel='l', thresh=(0, 255)):
+    
+    channels = {'l':0, 'u':1, 'v':2}
+    luv = cv2.cvtColor(img, cv2.COLOR_RGB2Luv)
+    channel = luv[:,:,channels[channel]]
     binary = np.zeros_like(channel)
     binary[(channel>thresh[0]) & (channel<thresh[1])]=1
     

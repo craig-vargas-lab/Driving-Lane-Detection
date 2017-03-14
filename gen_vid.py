@@ -14,20 +14,23 @@ from moviepy.editor import VideoFileClip
 IN_VID = 'project_video.mp4'
 OUT_VID = 'tracked.mp4'
 
-TEST_DIR = 'test_images'
-GLOB_EXT = 'test*.jpg'
+TEST_DIR = 'test_images' # 'more_test_images' # 'test_images'
+GLOB_EXT = 'cv_test*.jpg' # 'test*.jpg'
 TEST_NAME = 'test1.jpg'
 STRAIGHT = 'straight_lines1.jpg'
-CURVED = 'test4.jpg'
-OUT_DIR = 'output_images'
+TEST_IMG = 'straight_lines1.jpg'
+OUT_DIR = 'output_images' # 'cvOutput' # 'output_images'
 OUT_NAME_PREFIX = 'processed'
 
 # Run Mode Constants
 # ==================
 DISPLAY_IMAGE = True
-DISPLAY_PIPELINE = False
+PROCESS_TEST_IMAGES = False
 PROCESS_VIDEO = False
+# Pipeline options
+# ==================
 SAVE_PIPELINE = True
+DISPLAY_PIPELINE = False
 
 # Calibration data
 # ================
@@ -43,8 +46,10 @@ def main():
 	else:
 		if DISPLAY_IMAGE:
 			test_pipeline()
-		else:
+		elif PROCESS_TEST_IMAGES:
 			process_test_images()
+		else:
+			print("No run mode selected")
 
 
 def process_video():
@@ -60,7 +65,7 @@ def test_pipeline():
 	"""
 	Function was used for testing purposes to test the image processing pipeline
 	"""
-	img = mpimg.imread(os.path.join(TEST_DIR, CURVED))
+	img = mpimg.imread(os.path.join(TEST_DIR, TEST_IMG))
 	if DISPLAY_IMAGE:
 		# Show image
 		plt.imshow(img)
@@ -78,7 +83,7 @@ def process_test_images():
 		print('Currently working on:', path)
 		img = mpimg.imread(path)
 		display = process_img(img)
-		cv2.imwrite(os.path.join(OUT_DIR, OUT_NAME_PREFIX + str(idx + 1) + ".jpg"), display)
+		cv2.imwrite(os.path.join(OUT_DIR, OUT_NAME_PREFIX + str(idx + 1) + ".jpg"), cv2.cvtColor(display, cv2.COLOR_RGB2BGR))
 
 
 def process_img(img):
@@ -136,42 +141,122 @@ def get_binary_img(img):
 	that the car must stay within.
 	"""
 
-	# # Filtering for S channel then taking sobel of that image to clean it up
-	hls_s = cv_utils.hls_select(img, channel='s', thresh=(170,255)) # ***Helpful (100,255)
-	# hsv_s = cv_utils.hsv_select(img, channel='s', thresh=(205,255)) # ***Helpful (125,255)
 
 
-	# kernal test
-	sobelx = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=5, thresh=(19, 255))
-	sobely = cv_utils.abs_sobel_thresh(img, orient='y', sobel_kernel=5, thresh=(19, 255)) # ***Good
+	# # # Filtering for S channel then taking sobel of that image to clean it up
+	# hls_s = cv_utils.hls_select(img, channel='s', thresh=(170,255)) # ***Helpful (170,255)
+	# # hsv_s = cv_utils.hsv_select(img, channel='s', thresh=(205,255)) # ***Helpful (125,255)
 
 
-	binary = np.zeros_like(hls_s)
-	# binary[(hls_s == 1) | (hsv_s == 1) | ((sobelx==1) & (sobely==1))] = 1 # Winner
-	binary[(hls_s == 1) | ((sobelx==1) & (sobely==1))] = 1 # Winner
+
+	# hls_s1 = cv_utils.hls_select(img, channel='s', thresh=(220,255)) # ***Helpful (100,255)
+	# hls_s2 = cv_utils.hls_select(img, channel='s', thresh=(230,255)) # ***Helpful (100,255)
+	# hls_s3 = cv_utils.hls_select(img, channel='s', thresh=(240,255)) # ***Helpful (100,255)
+
+	# hsv_v1 = cv_utils.hsv_select(img, channel='v', thresh=(225,255)) # ***Helpful (100,255)
+	# hsv_v2 = cv_utils.hsv_select(img, channel='v', thresh=(227,255)) # ***Helpful (100,255)
+	# hsv_v3 = cv_utils.hsv_select(img, channel='v', thresh=(239,255)) # ***Helpful (100,255)
+
+
+
+	# # kernal test
+	# sobelx = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(19, 255))
+	# sobely = cv_utils.abs_sobel_thresh(img, orient='y', sobel_kernel=3, thresh=(19, 255)) # ***Good
+
+	# sobelx7 = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(24, 255)) # Winner
+	# sobelx8 = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(27, 255))
+	# sobelx9 = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(30, 255))
+	# sobely = cv_utils.abs_sobel_thresh(img, orient='y', sobel_kernel=3, thresh=(5, 255)) 
+
+	# sobelx2 = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(15, 255))
+	# sobely2 = cv_utils.abs_sobel_thresh(img, orient='y', sobel_kernel=3, thresh=(40, 255))
+	# sobel2 = np.zeros_like(hls_s)
+	# sobel2[((sobelx2==1) & (sobely2==1))] = 1
+
+	# sobelx3 = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(18, 255))
+	# sobely3 = cv_utils.abs_sobel_thresh(img, orient='y', sobel_kernel=3, thresh=(50, 255))
+	# sobel3 = np.zeros_like(hls_s)
+	# sobel3[((sobelx3==1) & (sobely3==1))] = 1 
+
+	# sobelx4 = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(21, 255))
+	# sobely4 = cv_utils.abs_sobel_thresh(img, orient='y', sobel_kernel=3, thresh=(65, 255))
+	# sobel4 = np.zeros_like(hls_s)
+	# sobel4[((sobelx4==1) & (sobely4==1))] = 1 
+
+
+	# binary = np.zeros_like(hls_s)
+	# # binary[(hls_s == 1) | (hsv_s == 1) | ((sobelx==1) & (sobely==1))] = 1 # Winner
+	# binary[(hls_s == 1) | ((sobelx==1) & (sobely==1))] = 1 # Winner
+
+
+	# lab_l = cv_utils.lab_select(img, channel='l', thresh=(200,255))
+	# lab_a = cv_utils.lab_select(img, channel='a', thresh=(135,255))
+	# lab_b = cv_utils.lab_select(img, channel='b', thresh=(135,255))
+	# lab_b2 = cv_utils.lab_select(img, channel='b', thresh=(140,255))
+	# lab_b3 = cv_utils.lab_select(img, channel='b', thresh=(145,255)) # Winner
+
+
+	# luv_l = cv_utils.luv_select(img, channel='l', thresh=(212,255))
+	# luv_l2 = cv_utils.luv_select(img, channel='l', thresh=(214,255))
+	# luv_l3 = cv_utils.luv_select(img, channel='l', thresh=(216,255)) # Winner
+	# luv_u = cv_utils.luv_select(img, channel='u', thresh=(105,255))
+	# luv_v = cv_utils.luv_select(img, channel='v', thresh=(150,255))
+
+	# bin_test = np.zeros_like(hls_s)
+	# bin_test[(lab_b==1) | (luv_l3==1) | ((sobelx==1) & (sobely==1))] = 1
+	# sobel = np.zeros_like(hls_s)
+	# sobel[((sobelx==1) & (sobely==1))] = 1
 
 
 	# # Visualize
 	# sobel_comb = np.zeros_like(sobelx)
 	# sobel_comb[(sobelx==1) & (sobely==1)] = 1
-	# f, ([ax1, ax2, ax3], [ax4, ax5, ax6]) = plt.subplots(2, 3, figsize=(20,10))
-	# ax1.set_title('reg')
-	# ax1.imshow(img, cmap='gray')
-	# ax2.set_title('HLS-S')
-	# ax2.imshow(hls_s, cmap='gray')
-	# ax3.set_title('HSV-S')
-	# ax3.imshow(hsv_s, cmap='gray')
-	# ax4.set_title('SobelX')
-	# ax4.imshow(sobelx, cmap='gray')
-	# ax5.set_title('SobelY')
-	# ax5.imshow(sobely, cmap='gray')
-	# ax6.set_title('Sobel Comb')
-	# ax6.imshow(sobel_comb, cmap='gray')
+	# f, ([ax1, ax2, ax3], [ax4, ax5, ax6], [ax7, ax8, ax9]) = plt.subplots(3, 3, figsize=(9,6))
+	# ax1.set_title('Sobel2')
+	# ax1.imshow(hls_s1, cmap='gray')
+	# ax2.set_title('Sobel3')
+	# ax2.imshow(hls_s2, cmap='gray')
+	# ax3.set_title('Sobel4')
+	# ax3.imshow(hls_s3, cmap='gray')
+	# # ==============================
+	# ax4.set_title('SobelX2')
+	# ax4.imshow(lab_b, cmap='gray')
+	# ax5.set_title('SobelX3')
+	# ax5.imshow(lab_b2, cmap='gray')
+	# ax6.set_title('SobelX4')
+	# ax6.imshow(lab_b3, cmap='gray')
+	# # ==============================
+	# ax7.set_title('Test')
+	# ax7.imshow(hsv_v1, cmap='gray')
+	# ax8.set_title('Old')
+	# ax8.imshow(hsv_v2, cmap='gray')
+	# ax9.set_title('Sobel')
+	# ax9.imshow(hsv_v3, cmap='gray')
 	# plt.show()
+	# # exit()
 	# # Visualize part II
+	# # Binary filters
+	# lab_b = cv_utils.lab_select(img, channel='b', thresh=(135,255)) # Winner
+	# luv_l = cv_utils.luv_select(img, channel='l', thresh=(214,255)) # Winner
+	# sobel_x = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(24, 255)) # Winner
+	# hsv_v = cv_utils.hsv_select(img, channel='v', thresh=(227,255)) # ***Helpful (100,255)
+	# hls_s = cv_utils.hls_select(img, channel='s', thresh=(230,255)) # ***Helpful (100,255)
+	# binary = np.zeros_like(lab_b)
+	# binary[(lab_b == 1) | (luv_l == 1) | (sobel_x == 1) | (hsv_v == 1) | (hls_s == 1)] = 1 # Winner
 	# plt.imshow(binary, cmap='gray')
 	# plt.show()
 	# exit()
+
+
+
+	# Binary filters
+	lab_b = cv_utils.lab_select(img, channel='b', thresh=(140,255)) # Winner
+	luv_l = cv_utils.luv_select(img, channel='l', thresh=(214,255)) # Winner
+	sobel_x = cv_utils.abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(24, 255)) # Winner
+	hsv_v = cv_utils.hsv_select(img, channel='v', thresh=(227,255)) # 
+	hls_s = cv_utils.hls_select(img, channel='s', thresh=(230,255)) # ***Helpful (100,255)
+	binary = np.zeros_like(lab_b)
+	binary[(lab_b == 1) | (luv_l == 1) | (sobel_x == 1) | (hsv_v == 1) | (hls_s == 1)] = 1 # Winner
 
 	if DISPLAY_IMAGE and DISPLAY_PIPELINE:
 		plt.imshow(binary, cmap='gray')
@@ -219,10 +304,10 @@ def get_birds_eye_view(img):
 	Define the trapezoid points as percentages just in case we wanted to work
 	with different scaled versions of the image
 	"""
-	toplx = 570/1280 
+	toplx = 575/1280 
 	toprx = 705/1280 
 	botlx = 255/1280
-	botrx = 1040/1280
+	botrx = 1040/1280 # 1040
 
 	src = np.float32([
 		[toplx*width, topy*height], 
@@ -268,7 +353,7 @@ def find_lanes(img, leftx_base=None, rightx_base=None, rolling_fit=[]):
 	"""
 	# Find a starting point for the left and right lanes
 	if(leftx_base is None and rightx_base is None):
-		histogram = np.sum(img[int(img.shape[0]/2):,:], axis=0)
+		histogram = np.sum(img[int(img.shape[0]*2/10):,:], axis=0)
 
 		# Create an output image to draw on and  visualize the result
 		out_img = np.dstack((img, img, img))*255
@@ -290,9 +375,9 @@ def find_lanes(img, leftx_base=None, rightx_base=None, rolling_fit=[]):
 	leftx_current = leftx_base
 	rightx_current = rightx_base
 	# Set the width of the windows +/- margin
-	margin = 100
+	margin = 150
 	# Set minimum number of pixels found to recenter window
-	minpix = 50
+	minpix = window_height * margin * 0.25
 	# Create empty lists to receive left and right lane pixel indices
 	left_lane_inds = []
 	right_lane_inds = []
@@ -380,27 +465,34 @@ def find_lanes(img, leftx_base=None, rightx_base=None, rolling_fit=[]):
 	cv2.fillPoly(color_mask_warp, np.int_([pts]), (0,255, 0))
 
 
-	if SAVE_PIPELINE:
-		out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
-		out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
-		# Define indexes for the polynomial fit
-		lane_mask = np.zeros(img.shape, dtype=bool)
-		for y, left, right in zip(ploty, left_fitx, right_fitx):
+	out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
+	out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
+	# Define indexes for the polynomial fit
+	lane_mask = np.zeros(img.shape, dtype=bool)
+	for y, left, right in zip(ploty, left_fitx, right_fitx):
+		if left >= 0:
 			lane_mask[int(y)][int(left)] = True
+		if left >= 1:
 			lane_mask[int(y)][int(left)-1] = True
+		if left >= - 1:
 			lane_mask[int(y)][int(left)+1] = True
+		if right <= 1280:
 			lane_mask[int(y)][int(right)] = True
+		if right <= 1281:
 			lane_mask[int(y)][int(right)-1] = True
+		if right <= 1279:
 			lane_mask[int(y)][int(right)+1] = True
-		out_img[lane_mask] = [242, 255, 0]
-		plt.imshow(out_img)
-		plt.show()
+	out_img[lane_mask] = [242, 255, 0]
+
+	if SAVE_PIPELINE:
 		out_name = 'find_lanes_test4.jpg'
 		out_path = os.path.join(OUT_DIR, out_name)
 		cv2.imwrite(out_path, out_img)
 
 
 	if DISPLAY_IMAGE and DISPLAY_PIPELINE:
+		plt.imshow(out_img)
+		plt.show()
 		plt.imshow(color_mask_warp)
 		plt.show()	
 
