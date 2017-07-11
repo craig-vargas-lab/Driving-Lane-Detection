@@ -10,7 +10,7 @@ Along with the chessboard photos, the findChessboardCorners algorithm needs to b
 
 From the openCV documentation we see that the calibrateCamera function gives us information that can be used to undistort photos taken by the camera.  In particular, we need the Camera Matrix, that contains intrinsic camera parameters for focal lengths expressed in pixels and an image point that is typically the center of the image.  We also need the distortion coefficients which consist of both radial and tangential distortion coefficients.
 
-The code for camera calibration exits in:
+*The code for camera calibration exits in:*
 1.	Identifying chessboard corners: calibrate.py – lines 38-54
 2.	Defining a set of real world points: calibrate.py – lines 32-33
 3.	Calibrating the camera: calibrate.py – line 66
@@ -73,7 +73,6 @@ Chosen source points: 		SRC			DST
 		Bottom Right: 		(1040, 660)		(1030, 720)
 
 
-*Example of a warped perspective*
 [Example of warped road photo](./output_images/warped_test4.jpg)
 
 
@@ -90,10 +89,7 @@ Once the lane pixels were located two types of polynomials were fit to those pix
 Lastly the points given by the polynomial fit to the image pixel locations were formatted into an array that described the coordinates of the left and right lanes in a manner that would allow someone to “connect-the-dots” and draw a polynomial that defines the driving lane (gen_vid.py lines 455-465).  The coordinates were then fed into the openCV function fillPoly in order to draw a shaded region that enclosed the car’s driving lane.
 
 
-Example of lane pixels and the polynomial fit to them
-
 [Example of: Lane pixels with polynomial fit](./output_images/find_lanes_test4.jpg)
-
 
 
 
@@ -125,7 +121,7 @@ Drawing the lane on top of the original image was done with help from openCV’s
 [Example of: Final result](./output_images/final_display_test4.jpg)
 
 
-##Pipeline video
+## Pipeline video
 
 [Link to my video result](https://youtu.be/a_UVNSed4rk)
 
