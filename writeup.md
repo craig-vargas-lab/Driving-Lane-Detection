@@ -2,6 +2,9 @@
 
 ### Experiement to detect drivine lane lines via images from a dashboard camera
 
+### Tools
+Most of the work for this project was done in Python utilizing the anaconda libraries.  A list of the libraries used can be found [here](./ai-cv.txt).
+
 ## Camera Calibration
 
 The dashboard camera was calibrated by using the built in opencv helper functions: findChessboardCorners and calibrateCamera.  Due to the known uniform design of a chessboard, the functions can calibrate the camera by viewing a chessboard photo taken by the camera, analyzing the geometry of the chessboard corners, and calculating what type of adjustment must be made to set the chessboard corners from where they appear in the photo to where they should appear if the camera had no distortion effect.  To make this process robust multiple chessboard photos were taken with the same camera at different angles and depths so that the algorithm could get a good idea of the distortion effects of the camera along most areas of the photograph.
